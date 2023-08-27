@@ -8,6 +8,7 @@ contract XelaCollectionNFT is ERC721Enumerable {
     // Initialize the ERC-721 contract
     constructor() ERC721("Xela NFT Collection", "XLA") {}
 
+    // Function that anyone can call to get an NFT
     function mint() public {
         _safeMint(msg.sender, totalSupply());
     }
