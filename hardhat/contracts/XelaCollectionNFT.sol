@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
+// (Replace with your whitelist smart contract when everything works well)
+
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 
 contract XelaCollectionNFT is ERC721Enumerable {
