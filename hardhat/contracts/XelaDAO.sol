@@ -32,7 +32,30 @@ contract XelaDAO is Ownable {
     constructor(address _nftMarketplaceAdd, address _xelaNFTAdd) payable {
         nftMarketplace = IFakeNFTMarketplace(_nftMarketplaceAdd);
         xelaNFT        = IXelaCollectionNFT(_xelaNFTAdd);
-    } 
+    }
+
+    // Modifier to only let the XelaNFTs owner call certain functions
+    modifier daoMemberOnly() {
+        require(xelaNFT.balanceOf(msg.sender) > 0, "NOT_A_DAO_MEMBER");
+        _;
+    }
+
+    /// @dev createProposal() allows dao member to submit a proposal to buy a new NFT with the treasury
+    /// @param _tokenIdToBuy - The ID of the NFT to proposer would like to buy
+    /// @return Returns the ID of the newly created proposal 
+    function createProposal(uint256 _tokenIdToBuy) external daoMemberOnly returns(uint256) {
+
+        require(nftMarketplace.available(_tokenIdToBuy), "THIS_NFT_ALREADY_HAS_OWNER");
+
+        Proposal storage proposal = proposals[numProposals];
+        proposal.tokenIdToBuy = _tokenIdToBuy;
+        // Proposol voting deadline is (current time + 5 minutes)
+        proposal.deadline     = block.timestamp + 5 minutes;
+
+        numProposals++;
+
+        return numProposals - 1;
+    }
 
 
 }
