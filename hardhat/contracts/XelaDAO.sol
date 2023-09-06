@@ -23,6 +23,12 @@ contract XelaDAO is Ownable {
         mapping(uint256 => bool) voters; // Mapping between XelaNFT tokenIDs and booleans to know if the NFT has been used to vote 
     }
 
+    // Enum containing the only possible options for voting
+    enum Vote {
+        YES,
+        NO
+    }
+
     // Mapping of ID to Proposal in order to be able to list the proposals
     mapping(uint256 => Proposal) public proposals;
     uint256 public numProposals;
@@ -37,6 +43,12 @@ contract XelaDAO is Ownable {
     // Modifier to only let the XelaNFTs owner call certain functions
     modifier daoMemberOnly() {
         require(xelaNFT.balanceOf(msg.sender) > 0, "NOT_A_DAO_MEMBER");
+        _;
+    }
+
+    // Modifier to check if the proposal deadline hasn't exceeded
+    modifier openProposalOnly(uint256 proposalIndex) {
+        require(block.timestamp < proposals[proposalIndex].deadline, "PROPOSAL_EXPIRED");
         _;
     }
 
@@ -57,5 +69,31 @@ contract XelaDAO is Ownable {
         return numProposals - 1;
     }
 
+    /// @dev voteOnProposal() take a DAO member's vote on a proposal into account
+    /// @param proposalIndex - The index of the proposal to vote on
+    /// @param vote - The type of the vote they want to cast
+    function voteOnProposal(uint256 proposalIndex, Vote vote) external daoMemberOnly openProposalOnly(proposalIndex) {
+
+        Proposal storage proposal = proposals[proposalIndex];
+        uint256 voterNFTBalance = xelaNFT.balanceOf(msg.sender);
+        uint256 numVotes = 0;
+
+        // Calculate how many NFTs owned by the voter haven't been used for voting on this proposal
+        for(uint256 i = 0; i < voterNFTBalance; i++) {
+            uint256 tokenIdUsed = xelaNFT.tokenOfOwnerByIndex(msg.sender, i);
+            if(proposal.voters[tokenIdUsed] == false) {
+                proposal.voters[tokenIdUsed] = true;
+                numVotes++;
+            }
+        }
+
+        require(numVotes > 0, "HAS_ALREADY_VOTED");
+        if (vote == Vote.NO) {
+            proposal.noVote += numVotes;
+        }
+        else {
+            proposal.yesVote += numVotes;
+        }
+    }
 
 }
