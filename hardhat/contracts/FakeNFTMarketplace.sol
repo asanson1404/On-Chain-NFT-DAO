@@ -1,4 +1,22 @@
 // SPDX-License-Identifier: MIT
+
+//==================================================>
+    // Realised by Alexandre Sanson the 07/09/2023
+    // Inspired from learnweb3.io
+//==================================================>
+
+/*
+    Smart contract purpose:
+
+        Smart contract which simulate an NFT Marketplace.
+        It's possible to call classical function such as purchase, getPrice and available.
+        The user can invent the token id ;)
+
+    Fake NFT Marketplace Contract Address: 
+    Etherscan.io : 
+
+*/
+
 pragma solidity ^0.8.18;
 
 contract FakeNFTMarketplace {

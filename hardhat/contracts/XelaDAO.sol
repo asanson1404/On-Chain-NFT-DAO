@@ -1,4 +1,31 @@
 // SPDX-License-Identifier: MIT
+
+//==================================================>
+    // Realised by Alexandre Sanson the 07/09/2023
+    // Inspired from learnweb3.io
+//==================================================>
+
+/*
+    Smart contract purpose:
+
+        Smart contract to manage the DAO. 
+        From the ethers that was gained through the sale of NFTs, the DAO members (NFTs holders) can create and vote on 
+        proposals to use that ETH for purchasing other NFTs from an NFT marketplace, and speculate on price.
+        
+        DAO rules:
+        1 - Anyone who owns a Xela NFT can create a proposal to purchase a different NFT from an NFT marketplace
+        2 - Everyone with a Xela NFT can vote for or against the active proposals
+        3 - Each NFT counts as one vote for each proposal
+        4 - Voters cannot vote multiple times on the same proposal with the same NFT
+        5 - If majority of the voters vote in favor of the proposal by the deadline, the NFT purchase 
+            happens automatically from the marketplace
+
+
+    Xela DAO Contract Address: 
+    Etherscan.io : 
+
+*/
+
 pragma solidity ^0.8.18;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -62,6 +89,11 @@ contract XelaDAO is Ownable {
         require(block.timestamp >= proposals[proposalIndex].deadline, "PROPOSAL_NOT_EXPIRED");
         require(proposals[proposalIndex].executed == false, "PROPOSAL_ALREADY_EXECUTED");
         _;
+    }
+
+    // Get the DAO Contract's balance
+    function getContractBalance() public view returns(uint256) {
+        return address(this).balance;
     }
 
     /// @dev createProposal() allows dao member to submit a proposal to buy a new NFT with the treasury
