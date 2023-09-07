@@ -9,6 +9,10 @@ import "../interfaces/IXelaCollectionNFT.sol";
 
 contract XelaDAO is Ownable {
 
+    // Allow the contract to accept ETH deposits directly (without calling a payable function)
+    receive() external payable {}
+    fallback() external payable {}
+
     // Variable to store the contracts we will call
     IFakeNFTMarketplace nftMarketplace;
     IXelaCollectionNFT  xelaNFT;
@@ -49,6 +53,14 @@ contract XelaDAO is Ownable {
     // Modifier to check if the proposal deadline hasn't exceeded
     modifier openProposalOnly(uint256 proposalIndex) {
         require(block.timestamp < proposals[proposalIndex].deadline, "PROPOSAL_EXPIRED");
+        _;
+    }
+
+    // Modifer to check if the proposal deadline has been exceeded
+    // and hasn't been executed yet 
+    modifier closedProposalOnly(uint256 proposalIndex) {
+        require(block.timestamp >= proposals[proposalIndex].deadline, "PROPOSAL_NOT_EXPIRED");
+        require(proposals[proposalIndex].executed == false, "PROPOSAL_ALREADY_EXECUTED");
         _;
     }
 
@@ -94,6 +106,30 @@ contract XelaDAO is Ownable {
         else {
             proposal.yesVote += numVotes;
         }
+    }
+
+    /// @dev executeProposal() allow any DAO member to execute the proposal, namely purchase the NFT if there's a majority of yes
+    /// @param proposalIndex - The index of the proposal to execute
+    function executeProposal(uint256 proposalIndex) external daoMemberOnly closedProposalOnly(proposalIndex) {
+
+        Proposal storage proposal = proposals[proposalIndex];
+
+        require(proposal.yesVote != proposal.noVote, "AS_MANY_YESES_AS_NOES_NEED_TO_FIND_A_CONSENSUS");
+        require(proposal.yesVote > proposal.noVote, "COULD_NOT_PURCHASE_THE_NFT_BECAUSE_THE_COMMUNITY_HAS_VOTED_NO");
+
+        uint256 nftPrice = nftMarketplace.getPrice();
+        require(address(this).balance >= nftPrice, "NOT_ENOUGH_FUND_IN_THE_SMART_CONTRACT");
+        nftMarketplace.purchase{value: nftPrice}(proposal.tokenIdToBuy);
+
+        proposal.executed = true;
+    }
+
+    /// @dev withdrawEther() allows the contract owner (deployer) to withdraw the ETH from the contract
+    function withdrawEthers() external onlyOwner {
+        uint256 ethersAmount = address(this).balance;
+        require(ethersAmount > 0, "NOTHING_TO_WITHDRAW_CONTRACT_BALANCE_EMPTY");
+        (bool sent,) = payable(owner()).call{value: ethersAmount}("");
+        require(sent, "FAILED_TO_WITHDRAW_ETHERS");
     }
 
 }
