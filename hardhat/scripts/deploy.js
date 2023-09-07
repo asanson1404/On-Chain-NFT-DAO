@@ -1,33 +1,68 @@
-// We require the Hardhat Runtime Environment explicitly here. This is optional
-// but useful for running the script in a standalone fashion through `node <script>`.
-//
-// You can also run a script with `npx hardhat run <script>`. If you do that, Hardhat
-// will compile your contracts, add the Hardhat Runtime Environment's members to the
-// global scope, and execute the script.
 const hre = require("hardhat");
 
-async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const unlockTime = currentTimestampInSeconds + 60;
-
-  const lockedAmount = hre.ethers.parseEther("0.001");
-
-  const lock = await hre.ethers.deployContract("Lock", [unlockTime], {
-    value: lockedAmount,
-  });
-
-  await lock.waitForDeployment();
-
-  console.log(
-    `Lock with ${ethers.formatEther(
-      lockedAmount
-    )}ETH and unlock timestamp ${unlockTime} deployed to ${lock.target}`
-  );
+// Function to wait in milliseconds
+async function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+async function main() {
+
+  // Deploy the Whitelist Contract ; we give the argument 4 to the constructor
+  const whitelistContract = await hre.ethers.deployContract("Whitelist", [4]);
+  await whitelistContract.waitForDeployment();
+  const whitelistContractAddr = whitelistContract.target;
+  console.log("Whitelist Contract deployed to:", whitelistContractAddr);
+
+  // Deploy the Fake NFT Marketplace Contract
+  const fakeNftMarketplaceContract = await hre.ethers.deployContract("FakeNFTMarketplace");
+  await fakeNftMarketplaceContract.waitForDeployment();
+  const fakeNftMarketplaceContractAddr = fakeNftMarketplaceContract.target;
+  console.log("Fake NFT Marketplace Contract deployed to: ", fakeNftMarketplaceContractAddr);
+
+  // Deploy the NFT Contract by giving the address of the Whitelist Contract to the constructor
+  const xelaNftContract = await hre.ethers.deployContract("XelaNftCollection", [whitelistContractAddr]);
+  await xelaNftContract.waitForDeployment();
+  const xelaNftContractAddr = xelaNftContract.target;
+  console.log("XelaCollectionNFT Contract deployed to: ", xelaNftContractAddr);
+
+  // Deploy the DAO Contract by giving the address of the FakeNFTMarketplace Contract and XelaNFT Constract to the constructor
+  const daoContract = await hre.ethers.deployContract("XelaDAO", [fakeNftMarketplaceContractAddr, xelaNftContractAddr]);
+  await daoContract.waitForDeployment();
+  const daoContractAddr = daoContract.target;
+  console.log("Xela DAO Contract deployed to: ", daoContractAddr);
+  
+  // Wait 30 seconds to let Etherscan catch up with the deployments
+  await sleep(30 * 1000);
+
+  // verify the Whitelist Contract on Etherscan
+  await hre.run("verify:verify", {
+    address: whitelistContractAddr,
+    constructorArguments: [4],
+  });
+
+  // verify the Fake NFT Marketplace Contract on Etherscan
+  await hre.run("verify:verify", {
+    address: fakeNftMarketplaceContractAddr,
+  });
+
+  // verify the Xela NFT Contract on Etherscan
+  await hre.run("verify:verify", {
+    address: xelaNftContractAddr,
+    constructorArguments: [whitelistContractAddr],
+  });
+
+  // verify the Xela DAO Contract on Etherscan
+  await hre.run("verify:verify", {
+    address: daoContractAddr,
+    constructorArguments: [fakeNftMarketplaceContractAddr, xelaNftContractAddr],
+  });
+
+}
+
+// Call the main function and catch if there is any error
+main()
+      .then(() => process.exit(0))
+      .catch((error) => {
+          console.error(error);
+          process.exit(1);
+      });
