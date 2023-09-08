@@ -1,3 +1,9 @@
+/**
+ *  Script to deploy and verify the 4 Smart Contracts of our project.
+ *  The deployer choosed to add 0.02 ethers to the DAO's treasury during the deployement.
+ *  Also, we automatically bind the Xela NFT Collection to this DAO (same treasury).
+ */
+
 const hre = require("hardhat");
 
 // Function to wait in milliseconds
@@ -26,11 +32,15 @@ async function main() {
   console.log("XelaCollectionNFT Contract deployed to: ", xelaNftContractAddr);
 
   // Deploy the DAO Contract by giving the address of the FakeNFTMarketplace Contract and XelaNFT Constract to the constructor
-  const daoContract = await hre.ethers.deployContract("XelaDAO", [fakeNftMarketplaceContractAddr, xelaNftContractAddr]);
+  const initialPayement = hre.ethers.parseEther("0.02"); // The fund the DAO deployer (DOA's owner) add to the treasury
+  const daoContract = await hre.ethers.deployContract("XelaDAO", [fakeNftMarketplaceContractAddr, xelaNftContractAddr], {value: initialPayement});
   await daoContract.waitForDeployment();
   const daoContractAddr = daoContract.target;
   console.log("Xela DAO Contract deployed to: ", daoContractAddr);
   
+  // Bind Xela Collection to the DAO Contract
+  await xelaNftContract.setDAOaddress(daoContractAddr);
+
   // Wait 30 seconds to let Etherscan catch up with the deployments
   await sleep(30 * 1000);
 
