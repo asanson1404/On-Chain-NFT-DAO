@@ -12,8 +12,8 @@
         It's possible to call classical function such as purchase, getPrice and available.
         The user can invent the token id ;)
 
-    Fake NFT Marketplace Contract Address: 
-    Etherscan.io : 
+    Fake NFT Marketplace Contract Address: 0x9E3e5D91A9521b14F842A747a62Af4774C4223b9
+    Etherscan.io : https://goerli.etherscan.io/address/0x9E3e5D91A9521b14F842A747a62Af4774C4223b9
 
 */
 

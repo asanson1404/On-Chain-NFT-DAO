@@ -21,8 +21,8 @@
             happens automatically from the marketplace
 
 
-    Xela DAO Contract Address: 
-    Etherscan.io : 
+    Xela DAO Contract Address: 0x4d67959Ffbaafd79DE45fF73147147185d626bf7
+    Etherscan.io : https://goerli.etherscan.io/address/0x4d67959Ffbaafd79DE45fF73147147185d626bf7
 
 */
 

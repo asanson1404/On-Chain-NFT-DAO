@@ -13,8 +13,8 @@
         We decided to have 4 whitelisted addresses 
 
 
-    Whitelist Contract Address: 
-    Etherscan.io : 
+    Whitelist Contract Address: 0x5FE3eD446e0195E9626744D1047E31C8927535d5
+    Etherscan.io : https://goerli.etherscan.io/address/0x5FE3eD446e0195E9626744D1047E31C8927535d5
 
 */
 
