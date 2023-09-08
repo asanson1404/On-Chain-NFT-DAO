@@ -26,7 +26,7 @@ async function main() {
   console.log("Fake NFT Marketplace Contract deployed to: ", fakeNftMarketplaceContractAddr);
 
   // Deploy the NFT Contract by giving the address of the Whitelist Contract to the constructor
-  const xelaNftContract = await hre.ethers.deployContract("XelaNftCollection", [whitelistContractAddr]);
+  const xelaNftContract = await hre.ethers.deployContract("XelaCollectionNFT", [whitelistContractAddr]);
   await xelaNftContract.waitForDeployment();
   const xelaNftContractAddr = xelaNftContract.target;
   console.log("XelaCollectionNFT Contract deployed to: ", xelaNftContractAddr);
