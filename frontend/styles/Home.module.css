@@ -3,7 +3,7 @@
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  padding: 6rem;
+  padding: 8rem;
   min-height: 100vh;
 }
 
@@ -23,7 +23,7 @@
 }
 
 .connectButton > h1 {
-  text-align: center; /* Centrer le texte */
+  text-align: center;
 }
 
 .connectButton > div {
@@ -36,16 +36,71 @@
   color: #623485;
 }
 
+.title {
+  font-size: 4rem;
+  text-align: center;
+}
+
+.walletaddr {
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+.userBalanceDiv {
+  display: inherit;
+  justify-content: inherit;
+  align-items: inherit;
+  font-size: 1.2rem;
+  max-width: var(--max-width);
+  width: 100%;
+  z-index: 2;
+  font-family: var(--font-mono);
+  flex-direction: column;
+  align-items: center; /* Centre les éléments horizontalement */
+  text-align: center; /* Centre le texte horizontalement */
+}
+
+.boutonAligne{
+  border: #915bbb;
+  border-radius: 6%;
+  background-color: #623485;
+	width: 45%;
+  height: 80%;
+	margin:3% 2.5% 5% 2.5%;
+	text-align:center;
+  flex-direction: row;
+}
+
+.boutonAligne:hover {
+  transform: scale(1.05); /* Augmente légèrement la taille au survol */
+}
+
+.boutonSeul{
+  border: whitesmoke;
+  border-radius: 6%;
+  background-color: #623485;
+	width: 120%;
+  height: 80%;
+  margin:10% 2.5% 20% 2.5%;
+	text-align:center;
+}
+
+.boutonSeul:hover {
+  transform: scale(1.05); /* Augmente légèrement la taille au survol */
+}
+
 .description {
   display: inherit;
   justify-content: inherit;
   align-items: inherit;
-  font-size: 0.85rem;
+  font-size: 1.2rem;
   max-width: var(--max-width);
   width: 100%;
   z-index: 2;
   font-family: var(--font-mono);
 }
+
+
 
 .image {
   position: relative;
