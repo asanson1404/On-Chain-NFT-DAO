@@ -30,8 +30,17 @@ export default function Home() {
   // State variable to show loading state when waiting for a transaction to go through
   const [joining, setJoining] = useState(false);
 
+  // State variable to store all proposals in the DAO
+  const [proposals, setProposals] = useState([]);
+
+  // Fake NFT token ID to purchase. Used when creating a proposal.
+  const [fakeNftTokenId, setFakeNftTokenId] = useState("");
+
+  // State variable to switch between 'Create Proposal' and 'View Proposals' tabs
+  const [selectedTab, setSelectedTab] = useState("");
+
   // Number of Xela Collection NFTs
-  const maxTokenIds = 14;
+  const maxTokenIds = Number(14);
 
   // Fetch the number of reserved tokens
   const nbTokenMinted = useContractRead({
@@ -86,6 +95,13 @@ export default function Home() {
   const daobalance = useBalance({
     address: XelaDAOAddress,
     watch: true
+  });
+
+  // Fetch the number of proposal in the DAO
+  const nbProposals = useContractRead({
+    address: XelaDAOAddress,
+    abi: XelaDAOABI,
+    functionName: 'numProposals',
   });
 
   // JSX - Function to join the whitelist (only 4 seats available)
@@ -145,6 +161,171 @@ export default function Home() {
 
     setMinting(false);
   }
+
+  // Function to make a createProposal transaction in the DAO
+  async function createProposal() {
+
+    setLoading(true);
+
+    try {
+      const hash = await writeContract({
+        address: XelaDAOAddress,
+        abi: XelaDAOABI,
+        functionName: 'createProposal',
+        args: [fakeNftTokenId],
+      });
+      await waitForTransaction(hash);
+    } catch (error) {
+      console.error(error);
+      window.alert(error);
+    }
+
+    setLoading(false);
+  } 
+
+  // Function to fetch a proposal bi its ID
+  async function fetchProposalById(id) {
+
+    try {
+      const proposal = await readContract({
+        address: XelaDAOAddress,
+        abi: XelaDAOABI,
+        functionName: 'proposals',
+        args: [id],
+      })
+
+      const [nftTokenIdToBuy, yesVote, noVote, deadline, executed] = proposal;
+
+      const parsedProposal = {
+        proposalId: id,
+        nftTokenIdToBuy: Number(nftTokenIdToBuy),
+        deadline: new Date(Number(deadline)),
+        yesVote: Number(yesVote),
+        noVote: Number(noVote),
+        executed: Boolean(executed),
+      };
+
+      return parsedProposal;
+
+    } catch(error) {
+      console.error(error);
+      window.alert(error);
+    }
+  }
+
+  // Function to fetch all the proposals in the DAO
+  async function fetchAllProposals() {
+
+    try {
+      const proposals = []
+
+      for(i = 0; i < Number(nbProposals.data); i++) {
+        const p = await fetchProposalById(i);
+        proposals.push(p)
+      }
+
+      setProposals(proposals);
+      return proposals;
+    } catch(error) {
+      console.error(error);
+      window.alert(error);
+    }
+  }
+
+  // Function to vote YES or NO on a proposal
+  async function voteOnProposal(proposalId, vote) {
+
+    setLoading(true);
+
+    try {
+      const hash = writeContract({
+        address: XelaDAOAddress,
+        abi: XelaDAOABI,
+        functionName: 'voteOnProposal',
+        args: [proposalId, vote === "YES" ? 0 : 1],
+      });
+      await waitForTransaction(hash);
+    } catch(error) {
+      console.error(error);
+      window.alert(error);
+    }
+
+    setLoading(false);
+  }
+
+  // Function to execute a proposal after deadline has been exceeded
+  async function executeProposal(proposalId) {
+
+    setLoading(true);
+
+    try {
+      const hash = writeContract({
+        address: XelaDAOAddress,
+        abi: XelaDAOABI,
+        functionName: 'executeProposal',
+        args: [proposalId],
+      });
+      await waitForTransaction(hash);
+    } catch(error) {
+      console.error(error);
+      window.alert(error);
+    }
+
+    setLoading(false);
+  }
+
+  // JSX - Function to render the content of the appropriate tab (Create Proposal or View Proposal)
+  // Based on the value of the selectedTab hook
+  function renderTabs() {
+    if(selectedTab === "Create Proposal") {
+      return renderCreateProposalTab();
+    } else if (selectedTab === "View Proposals") {
+      return renderViewProposalsTab();
+    }
+    return null;
+  }
+
+  // Render the Create Proposal Tab content
+  function renderCreateProposalTab() {
+    if(loading) {
+      return (
+        <div>
+          Loading... Waiting for transaction
+        </div>
+      );
+    }
+    else if (Number(nftUserBalance.data) === 0 ) {
+      return (
+        <div>
+          <p>You don't own any Xela NFT. <br/>
+          <b>You cannot create or vote on proposals</b></p>
+        </div>
+      );
+    } else {
+      return (
+        <div className={styles.container}>
+          <label>Fake NFT Token ID to Purchase: </label>
+          <input
+            placeholder="0"
+            type="number"
+            onChange={(e) => setFakeNftTokenId(e.target.value)}
+          />
+          <button className={styles.button2} onClick={() => createProposal()}>
+            Create Proposal
+          </button>
+        </div>
+      );
+    }
+  }
+
+  // Code that runs every time the value of 'selectedTab' changes
+  // Use Effect used to re-fetch all proposals when the user switch to 
+  // 'View Proposals' tab
+  useEffect(() => {
+    if (selectedTab === "View Proposals") {
+      fetchAllProposals();
+    }
+  }, [selectedTab]);
   
 
   useEffect(() => {
@@ -176,61 +357,62 @@ export default function Home() {
           <h3 className={styles.walletaddr}>Wallet address: {address.toString()}</h3>
           <div className={styles.userBalanceDiv}>
             Your Xela NFT balance: {Number(nftUserBalance.data)}<br/>
-            <div>
+            <div className={styles.flexMint}>
               {reservedTokens.data !== reservedTokensClaimed.data ? (
                 <>
                   {joining ? (
-                    <button className={styles.boutonAligne}>Joining...</button>
+                    <button>Joining...</button>
                   ) : (
-                    <button className={styles.boutonAligne} onClick={() => joinWhitelist()}>Join Whitelist</button>
+                    <button onClick={() => joinWhitelist()}>Join Whitelist</button>
                   )}
                   {minting ? (
-                    <button className={styles.boutonAligne}>Minting...</button>
+                    <button>Minting...</button>
                   ) : (
-                    <button className={styles.boutonAligne} onClick={() => mintXelaNFT()}>Mint Xela NFT</button>
+                    <button onClick={() => mintXelaNFT()}>Mint Xela NFT</button>
                   )}
                 </>
               ) : (
                 <>
                   {minting ? (
-                    <button className={styles.boutonSeul}>Minting...</button>
+                    <button>Minting...</button>
                   ) : (
-                    <button className={styles.boutonSeul} onClick={() => mintXelaNFT()}>Mint Xela NFT</button>
+                    <button onClick={() => mintXelaNFT()}>Mint Xela NFT</button>
                   )}
                 </>
               )}
             </div>
-
-
-
-            
           </div>
-            {
-              Number(nftUserBalance.data) === 0 && Number(nbTokenMinted.data) !== maxTokenIds && (
-                <div>
-                  {loading ? (
-                    <button >Minting...</button>
-                  ) : (
-                    <button>
-                      Mint Xela NFT
-                    </button>
-                  )}
-                </div>
-              )
-            }
+          <div>
             {daobalance.data && (
+              <div>
+                DAO's Treasury Balance:{" "}<b>{formatEther(Number(daobalance.data.value))} ETH</b>
+              </div>
+            )} <br/>
+            Total number of Proposals: {Number(nbProposals.data)}
+          </div>
+          <div className={styles.flexProposal}>
+            <button onClick={() => setSelectedTab("Create Proposal")}>
+              Create Proposal
+            </button>
+            <button onClick={() => setSelectedTab("View Proposals")}>
+              View Proposals
+            </button>
+          </div>
+          {renderTabs()}
+
+
+        </div>
+        {daobalance.data && (
               <>
                 DAO's Treasury Balance:{" "}
                 {formatEther(daobalance.data.value).toString()} ETH
                 RESERVED TOKENS = {reservedTokens.data}
                 RESERVED TOKENS CLAIMED = {reservedTokensClaimed.data}<br/>
                 whitelisted : {Boolean(whitelisted.data).toString()}
+                NB TOKEN MINTED : {nbTokenMinted.toString()}
+                {console.log(nbTokenMinted)}
               </>
             )} <br/>
-
-
-
-        </div>
         <div>
           <img className={styles.image} src="https://i.imgur.com/buNhbF7.png" />
         </div>
