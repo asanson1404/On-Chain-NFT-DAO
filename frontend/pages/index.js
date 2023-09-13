@@ -5,8 +5,8 @@ import {  XelaCollectionNFTAddress, XelaCollectionNFTABI,
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import Head from 'next/head'
 import { useEffect, useState } from 'react'
-import { formatEther } from 'viem'
-import { useAccount, useBalance, useConnect, useContractRead, useDisconnect } from 'wagmi'
+import { formatEther, parseEther } from 'viem'
+import { useAccount, useBalance, useConnect, useContractRead } from 'wagmi'
 import { readContract, waitForTransaction, writeContract } from 'wagmi/actions'
 import styles from '../styles/Home.module.css'
 import { Inter } from 'next/font/google'
@@ -16,7 +16,7 @@ const inter = Inter({ subsets: ['latin'], display: 'swap', });
 export default function Home() {
 
   // Check if the users's wallet is connected or disconnected, store its address (Wagmi hooks) 
-  const { address, isConnecting, isConnected, isDisconnected } = useAccount();
+  const { address, isConnected } = useAccount();
 
   // State variable to know if the Component has been mounted yet or not
   const [isMounted, setIsMounted] = useState(false);
@@ -38,6 +38,7 @@ export default function Home() {
     ddress: XelaCollectionNFTAddress,
     abi: XelaCollectionNFTABI,
     functionName: 'totalSupply',
+    watch: true,
   })
 
   // Fetch the number of reserved tokens (whitelisted tokens)
@@ -45,6 +46,7 @@ export default function Home() {
     address: XelaCollectionNFTAddress,
     abi: XelaCollectionNFTABI,
     functionName: 'reservedTokens',
+    watch: true,
   })
 
   // Fetch the number of reserved tokens claimed (whitelisted tokens claimed)
@@ -52,6 +54,7 @@ export default function Home() {
     address: XelaCollectionNFTAddress,
     abi: XelaCollectionNFTABI,
     functionName: 'reservedTokensClaimed',
+    watch: true,
   })
 
   // Fetch the number of NFT the user owns
@@ -59,7 +62,17 @@ export default function Home() {
     address: XelaCollectionNFTAddress,
     abi: XelaCollectionNFTABI,
     functionName: 'balanceOf',
-    args: [address]
+    args: [address],
+    watch: true,
+  })
+
+  // Determine if the user is whitelisted or not
+  const whitelisted = useContractRead({
+    address: WhitelistAddress,
+    abi: WhitelistABI,
+    functionName: 'whitelistedAddresses',
+    args: [address],
+    watch: true,
   })
 
   // Fetch the owner of the DAO and the NFT Collection
@@ -72,6 +85,7 @@ export default function Home() {
   // Fetch the balance of the DAO
   const daobalance = useBalance({
     address: XelaDAOAddress,
+    watch: true
   });
 
   // JSX - Function to join the whitelist (only 4 seats available)
@@ -98,22 +112,40 @@ export default function Home() {
   async function mintXelaNFT() {
 
     setMinting(true);
-
-    try {
-      const hash = await writeContract({
-        address: XelaCollectionNFTAddress,
-        abi: XelaCollectionNFTABI,
-        functionName: 'mint',
-      });
-      await waitForTransaction(hash);
-    } catch (error) {
-      console.error(error);
-      window.alert(error);
+    
+    if(Boolean(whitelisted.data) && Number(nftUserBalance.data) === 0) {
+      try {
+        const hash = await writeContract({
+          address: XelaCollectionNFTAddress,
+          abi: XelaCollectionNFTABI,
+          functionName: 'mint',
+          value: parseEther('0'),
+        })
+        await waitForTransaction(hash);
+      } catch (error) {
+        console.error(error);
+        window.alert(error);
+      }
+    } 
+    
+    else {
+      try {
+        const hash = await writeContract({
+          address: XelaCollectionNFTAddress,
+          abi: XelaCollectionNFTABI,
+          functionName: 'mint',
+          value: parseEther('0.01'),
+        })
+        await waitForTransaction(hash);
+      } catch (error) {
+        console.error(error);
+        window.alert(error);
+      }
     }
 
     setMinting(false);
   }
-
+  
 
   useEffect(() => {
     setIsMounted(true);
@@ -191,7 +223,8 @@ export default function Home() {
                 DAO's Treasury Balance:{" "}
                 {formatEther(daobalance.data.value).toString()} ETH
                 RESERVED TOKENS = {reservedTokens.data}
-                RESERVED TOKENS CLAIMED = {reservedTokensClaimed.data}
+                RESERVED TOKENS CLAIMED = {reservedTokensClaimed.data}<br/>
+                whitelisted : {Boolean(whitelisted.data).toString()}
               </>
             )} <br/>
 
