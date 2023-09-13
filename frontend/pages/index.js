@@ -68,14 +68,18 @@ export default function Home() {
       <div className={styles.main}>
         <div>
           <h1 className={styles.title}>Welcome to Xela DAO</h1>
-          {console.log(nftUserBalance.data)}
-          <div className={styles.description}>Your Xela NFT balance: {nftUserBalance.data}<br/>
+          {console.log(Number(nftUserBalance.data))}
+          {console.log(address)}
+          <div className={styles.description}>Your Xela NFT balance: {Number(nftUserBalance.data)}<br/>
             {daobalance.data && (
               <>
                 Treasury Balance:{" "}
                 {formatEther(daobalance.data.value).toString()} ETH
               </>
             )} <br/>
+          </div>
+          <div>
+              Wallet address: {address.toString()}
           </div>
 
 
