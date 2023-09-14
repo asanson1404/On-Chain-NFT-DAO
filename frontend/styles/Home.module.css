@@ -88,6 +88,47 @@
   transform: scale(1.05); /* Augmente légèrement la taille au survol */
 }
 
+.createProposalContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 50rem;
+  margin-bottom: 3rem;
+}
+
+.createProposalContainer > label {
+  flex: 1;
+  font-size: 1rem;
+  margin-right: 2rem;
+  color: #643f81;
+}
+
+.createProposalContainer > input {
+  flex: 2;
+  padding: 0.4rem;
+  font-size: 1rem;
+  background-color: black;
+  border: 0.1rem solid #643f81;
+  border-radius: 0.5rem;
+  outline: none;
+  margin-right: 2rem;
+}
+
+.createProposalContainer > button {
+  flex: 1;
+  padding: 0.5rem 0.2rem;
+  background-color: #643f81;
+  color: #fff;
+  border: none;
+  border-radius: 0.9rem;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.createProposalContainer > button:hover {
+  background-color: #786c82;
+}
+
 .description {
   display: inherit;
   justify-content: inherit;

@@ -44,7 +44,7 @@ export default function Home() {
 
   // Fetch the number of reserved tokens
   const nbTokenMinted = useContractRead({
-    ddress: XelaCollectionNFTAddress,
+    address: XelaCollectionNFTAddress,
     abi: XelaCollectionNFTABI,
     functionName: 'totalSupply',
     watch: true,
@@ -299,15 +299,14 @@ export default function Home() {
         <div>
           <p>You don't own any Xela NFT. <br/>
           <b>You cannot create or vote on proposals</b></p>
+          <p>{Number(nbTokenMinted.data)} tokens still available for purchase</p>
         </div>
       );
     } else {
       return (
-        <div className={styles.container}>
+        <div className={styles.createProposalContainer}>
           <label>Fake NFT Token ID to Purchase: </label>
-          <input
-            placeholder="0"
-            type="number"
+          <input type="number" placeholder="Token ID to purchase"
             onChange={(e) => setFakeNftTokenId(e.target.value)}
           />
           <button className={styles.button2} onClick={() => createProposal()}>
@@ -409,8 +408,8 @@ export default function Home() {
                 RESERVED TOKENS = {reservedTokens.data}
                 RESERVED TOKENS CLAIMED = {reservedTokensClaimed.data}<br/>
                 whitelisted : {Boolean(whitelisted.data).toString()}
-                NB TOKEN MINTED : {nbTokenMinted.toString()}
-                {console.log(nbTokenMinted)}
+                NB TOKEN MINTED : {Number(nbTokenMinted.data)}
+                
               </>
             )} <br/>
         <div>
