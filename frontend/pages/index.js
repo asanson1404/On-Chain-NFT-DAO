@@ -105,7 +105,7 @@ export default function Home() {
   // Fetch the balance of the DAO
   const daobalance = useBalance({
     address: XelaDAOAddress,
-    watch: true
+    watch: true,
   });
 
   // Fetch the number of proposal in the DAO
@@ -113,6 +113,7 @@ export default function Home() {
     address: XelaDAOAddress,
     abi: XelaDAOABI,
     functionName: 'numProposals',
+    watch: true,
   });
 
   // JSX - Function to join the whitelist (only 4 seats available)
@@ -218,7 +219,7 @@ export default function Home() {
       const parsedProposal = {
         proposalId: id,
         nftTokenIdToBuy: Number(nftTokenIdToBuy),
-        deadline: new Date(Number(deadline)),
+        deadline: new Date(Number(deadline) * 1000), // * 1000 because ethereum gives the time in seconds
         yesVote: Number(yesVote),
         noVote: Number(noVote),
         executed: Boolean(executed),
@@ -238,7 +239,7 @@ export default function Home() {
     try {
       const proposals = []
 
-      for(i = 0; i < Number(nbProposals.data); i++) {
+      for(var i = 0; i < Number(nbProposals.data); i++) {
         const p = await fetchProposalById(i);
         proposals.push(p)
       }
@@ -308,7 +309,7 @@ export default function Home() {
   function renderCreateProposalTab() {
     if(loading) {
       return (
-        <div>
+        <div className={styles.description}>
           Loading... Waiting for transaction
         </div>
       );
@@ -329,7 +330,7 @@ export default function Home() {
             <input id="createProposalInput" type="number" placeholder="Token ID to purchase"
               onChange={(e) => setFakeNftTokenId(e.target.value)}
             />
-            <button className={styles.button2} onClick={() => createProposal()}>
+            <button onClick={() => createProposal()}>
               Create Proposal
             </button>
           </div>
@@ -342,12 +343,72 @@ export default function Home() {
     }
   }
 
+  // Render the View Proposals Tab content
+  function renderViewProposalsTab() {
+    if(loading) {
+      return (
+        <div className={styles.description}>
+          Loading... Waiting for transaction
+        </div>
+      );
+    } else if (proposals.length === 0) {
+      return (
+        <div className={styles.description}>
+          No proposals have been created
+        </div>
+      );
+    } else {
+      return (
+        <div>
+
+          {proposals.map((p, index) => (
+            <div key={index} className={styles.card}>
+              <div className={styles.proposalId}><b>Proposal ID: {p.proposalId}</b></div>
+              <p>Fake NFT to purchase: {p.nftTokenIdToBuy}</p>
+              <p>Deadline: {p.deadline.toString().substring(0,25)}</p>
+              <p>YES vote: {p.yesVote}</p>
+              <p>NO vote: {p.noVote}</p>
+              <p>Executed?: {p.executed ? "Yes" : "No"}</p>
+
+              {/* If proposal's deadline not exceeded and proposal not executed */}
+              {p.deadline > Date.now() && !p.executed ? (
+                <div className={styles.flex}>
+                  {/* VOTE YES BUTTON */}
+                  <button className={styles.proposalActionButton} onClick={() => voteOnProposal(p.proposalId, "YES")}>
+                    Vote YES
+                  </button>
+                  {/* VOTE NO BUTTON */}
+                  <button className={styles.proposalActionButton} onClick={() => voteOnProposal(p.proposalId, "NO")}>
+                    Vote NO
+                  </button>
+                </div>
+              ) : p.deadline.getTime() < Date.now() && !p.executed ? (
+                <div className={styles.flex}>
+                  {/* Else if proposal's deadline exceeded and proposal not executed */}
+                  {/* EXECUTE PROPOSAL BUTTON */}
+                  <button className={styles.proposalActionButton} onClick={() => executeProposal(p.proposalId)}>
+                    Execute Proposal{" "}{p.yayVotes > p.nayVotes ? "(YES)" : "(NO)"}
+                  </button>
+                </div>
+              ) : (
+                <div className={styles.description}>
+                  Proposal Executed
+                </div>
+              )}
+            </div>
+          ))}       
+        </div>
+      );
+    }
+  }
+
   // Code that runs every time the value of 'selectedTab' changes
   // Use Effect used to re-fetch all proposals when the user switch to 
   // 'View Proposals' tab
   useEffect(() => {
     if (selectedTab === "View Proposals") {
       fetchAllProposals();
+      console.log("Proposals fetched");
     }
   }, [selectedTab]);
   
@@ -423,8 +484,6 @@ export default function Home() {
             </button>
           </div>
           {renderTabs()}
-          {console.log(createProposalError)}
-
 
         </div>
         {daobalance.data && (

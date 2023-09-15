@@ -72,7 +72,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #623485;
+  background-color: #4e0a82;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
   margin-top: 5%;
@@ -140,28 +140,54 @@
   font-family: var(--font-mono);
 }
 
+.card {
+  padding: 1.5rem 2rem;
+  border-radius: var(--border-radius);
+  background: rgba(var(--card-rgb), 0);
+  border: 1px solid rgba(var(--card-border-rgb), 0);
+  transition: background 200ms, border 200ms;
+  font-size: 2rem;
+}
 
+.card > span {
+  display: inline-block;
+  transition: transform 200ms;
+}
+
+.card > p {
+  margin: 0;
+  opacity: 0.6;
+  font-size: 1rem;
+  line-height: 1.5;
+  max-width: 30ch;
+}
+
+.proposalId {
+  margin-bottom: 1rem;
+  font-size: 1.15rem;
+  opacity: 0.7;
+}
+
+.proposalActionButton {
+  flex: 1;
+  padding: 0.5rem 0.9rem;
+  background-color: #4e0a82;
+  color: #fff;
+  border: none;
+  border-radius: 0.9rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  margin-right: 1.2rem;
+}
+
+.proposalActionButton:hover {
+  background-color: #5c2a83;
+}
 
 .image {
   position: relative;
   width: 10rem;
   z-index: 1;
-}
-
-.description a {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.description p {
-  position: relative;
-  margin: 0;
-  padding: 1rem;
-  background-color: rgba(var(--callout-rgb), 0.5);
-  border: 1px solid rgba(var(--callout-border-rgb), 0.3);
-  border-radius: var(--border-radius);
 }
 
 .code {
@@ -176,31 +202,7 @@
   max-width: 100%;
 }
 
-.card {
-  padding: 1rem 1.2rem;
-  border-radius: var(--border-radius);
-  background: rgba(var(--card-rgb), 0);
-  border: 1px solid rgba(var(--card-border-rgb), 0);
-  transition: background 200ms, border 200ms;
-}
 
-.card span {
-  display: inline-block;
-  transition: transform 200ms;
-}
-
-.card h2 {
-  font-weight: 600;
-  margin-bottom: 0.7rem;
-}
-
-.card p {
-  margin: 0;
-  opacity: 0.6;
-  font-size: 0.9rem;
-  line-height: 1.5;
-  max-width: 30ch;
-}
 
 .center {
   display: flex;
@@ -240,8 +242,8 @@
 /* Enable hover only on non-touch devices */
 @media (hover: hover) and (pointer: fine) {
   .card:hover {
-    background: rgba(var(--card-rgb), 0.1);
-    border: 1px solid rgba(var(--card-border-rgb), 0.15);
+    background: #0b050f;
+    border: 1px solid #623485;
   }
 
   .card:hover span {
