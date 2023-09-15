@@ -30,6 +30,17 @@ export default function Home() {
   // State variable to show loading state when waiting for a transaction to go through
   const [joining, setJoining] = useState(false);
 
+  // State variable to know if the fake token ID is invalid
+  const [createProposalError, setCreateProposalError] = useState(false);
+  // Use effect to display the error message only 3 seconds
+  useEffect(() => {
+    if(createProposalError === true) {
+      const timer = setTimeout(() => {
+        setCreateProposalError(false)
+      }, 3000);
+    }
+  }, [createProposalError])
+
   // State variable to store all proposals in the DAO
   const [proposals, setProposals] = useState([]);
 
@@ -165,22 +176,30 @@ export default function Home() {
   // Function to make a createProposal transaction in the DAO
   async function createProposal() {
 
-    setLoading(true);
+    const inputElement = document.getElementById("createProposalInput");
 
-    try {
-      const hash = await writeContract({
-        address: XelaDAOAddress,
-        abi: XelaDAOABI,
-        functionName: 'createProposal',
-        args: [fakeNftTokenId],
-      });
-      await waitForTransaction(hash);
-    } catch (error) {
-      console.error(error);
-      window.alert(error);
+    if (inputElement.value.trim() === "") {
+      setCreateProposalError(true);
     }
+    else {
+      setCreateProposalError(false);
+      setLoading(true);
 
-    setLoading(false);
+      try {
+        const hash = await writeContract({
+          address: XelaDAOAddress,
+          abi: XelaDAOABI,
+          functionName: 'createProposal',
+          args: [fakeNftTokenId],
+        });
+        await waitForTransaction(hash);
+      } catch (error) {
+        console.error(error);
+        window.alert(error);
+      }
+
+      setLoading(false);
+    }
   } 
 
   // Function to fetch a proposal bi its ID
@@ -304,14 +323,20 @@ export default function Home() {
       );
     } else {
       return (
-        <div className={styles.createProposalContainer}>
-          <label>Fake NFT Token ID to Purchase: </label>
-          <input type="number" placeholder="Token ID to purchase"
-            onChange={(e) => setFakeNftTokenId(e.target.value)}
-          />
-          <button className={styles.button2} onClick={() => createProposal()}>
-            Create Proposal
-          </button>
+        <div>
+          <div className={styles.createProposalContainer}>
+            <label>Fake NFT Token ID to Purchase: </label>
+            <input id="createProposalInput" type="number" placeholder="Token ID to purchase"
+              onChange={(e) => setFakeNftTokenId(e.target.value)}
+            />
+            <button className={styles.button2} onClick={() => createProposal()}>
+              Create Proposal
+            </button>
+          </div>
+          {createProposalError && (
+              <p>Invalid NFT Token ID<br/>
+              Must be a number</p>
+          )}
         </div>
       );
     }
@@ -398,6 +423,7 @@ export default function Home() {
             </button>
           </div>
           {renderTabs()}
+          {console.log(createProposalError)}
 
 
         </div>
