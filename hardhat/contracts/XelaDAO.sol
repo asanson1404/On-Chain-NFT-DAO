@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 //==================================================>
-    // Realised by Alexandre Sanson the 07/09/2023
+    // Realised by Alexandre Sanson the 16/09/2023
     // Inspired from learnweb3.io
 //==================================================>
 
@@ -21,8 +21,8 @@
             happens automatically from the marketplace
 
 
-    Xela DAO Contract Address: 0x4d67959Ffbaafd79DE45fF73147147185d626bf7
-    Etherscan.io : https://goerli.etherscan.io/address/0x4d67959Ffbaafd79DE45fF73147147185d626bf7
+    Xela DAO Contract Address:
+    https://sepolia.etherscan.io/ : 
 
 */
 
@@ -146,12 +146,11 @@ contract XelaDAO is Ownable {
 
         Proposal storage proposal = proposals[proposalIndex];
 
-        require(proposal.yesVote != proposal.noVote, "AS_MANY_YESES_AS_NOES_NEED_TO_FIND_A_CONSENSUS");
-        require(proposal.yesVote > proposal.noVote, "COULD_NOT_PURCHASE_THE_NFT_BECAUSE_THE_COMMUNITY_HAS_VOTED_NO");
-
-        uint256 nftPrice = nftMarketplace.getPrice();
-        require(address(this).balance >= nftPrice, "NOT_ENOUGH_FUND_IN_THE_SMART_CONTRACT");
-        nftMarketplace.purchase{value: nftPrice}(proposal.tokenIdToBuy);
+        if (proposal.yesVote > proposal.noVote) {
+            uint256 nftPrice = nftMarketplace.getPrice();
+            require(address(this).balance >= nftPrice, "NOT_ENOUGH_FUND_IN_THE_SMART_CONTRACT");
+            nftMarketplace.purchase{value: nftPrice}(proposal.tokenIdToBuy);
+        }
 
         proposal.executed = true;
     }

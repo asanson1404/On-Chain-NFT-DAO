@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 //==================================================>
-    // Realised by Alexandre Sanson the 07/09/2023
+    // Realised by Alexandre Sanson the 16/09/2023
     // Inspired from learnweb3.io
 //==================================================>
 
@@ -12,8 +12,8 @@
         It's possible to call classical function such as purchase, getPrice and available.
         The user can invent the token id ;)
 
-    Fake NFT Marketplace Contract Address: 0x9E3e5D91A9521b14F842A747a62Af4774C4223b9
-    Etherscan.io : https://goerli.etherscan.io/address/0x9E3e5D91A9521b14F842A747a62Af4774C4223b9
+    Fake NFT Marketplace Contract Address: 
+    https://sepolia.etherscan.io/ : 
 
 */
 
@@ -26,7 +26,7 @@ contract FakeNFTMarketplace {
 
 
     /// Set the purchase price of the fake NFTs
-    uint256 nftPrice = 0.1 ether;
+    uint256 nftPrice = 0.01 ether;
 
     /// Function to buy an NFT. This function update the token association tab at every new purchase.
     /// @param _tokenId - The fake NFT to purchase
