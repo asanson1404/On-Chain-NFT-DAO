@@ -467,7 +467,7 @@ export default function Home() {
   );
 
   return (
-    <div className={inter.className}>
+    <div className={inter.className} style={{ overflowX: 'scroll' }}>
       <Head>
         <title>Xela DAO</title>
         <meta name="description" content="Xela DAO" />
