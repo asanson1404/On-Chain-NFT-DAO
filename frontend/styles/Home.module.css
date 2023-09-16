@@ -333,6 +333,7 @@
 @media (max-width: 700px) {
   .content {
     padding: 4rem;
+    overflow-x: scroll;
   }
 
   .grid {
