@@ -51,7 +51,7 @@ export default function Home() {
     if(loadProposals === true) {
       const timer = setTimeout(() => {
         setLoadProposals(false)
-      }, 2500);
+      }, 3000);
       return () => clearTimeout(timer);
     }
   }, [loadProposals]);
@@ -203,7 +203,7 @@ export default function Home() {
           address: XelaDAOAddress,
           abi: XelaDAOABI,
           functionName: 'createProposal',
-          args: [fakeNftTokenId],
+          args: [BigInt(fakeNftTokenId)],
         });
         await waitForTransaction(hash);
       } catch (error) {
@@ -229,7 +229,7 @@ export default function Home() {
       const [nftTokenIdToBuy, yesVote, noVote, deadline, executed] = proposal;
 
       const parsedProposal = {
-        proposalId: id,
+        proposalId: Number(id),
         nftTokenIdToBuy: Number(nftTokenIdToBuy),
         deadline: new Date(Number(deadline) * 1000), // * 1000 because ethereum gives the time in seconds
         yesVote: Number(yesVote),
@@ -270,19 +270,20 @@ export default function Home() {
     setLoading(true);
 
     try {
-      const hash = writeContract({
+      const hash = await writeContract({
         address: XelaDAOAddress,
         abi: XelaDAOABI,
         functionName: 'voteOnProposal',
         args: [proposalId, vote === "YES" ? 0 : 1],
       });
       await waitForTransaction(hash);
-    } catch(error) {
+    } catch (error) {
       console.error(error);
       window.alert(error);
     }
 
     setLoading(false);
+    fetchAllProposals();
   }
 
   // Function to execute a proposal after deadline has been exceeded
@@ -291,7 +292,7 @@ export default function Home() {
     setLoading(true);
 
     try {
-      const hash = writeContract({
+      const hash = await writeContract({
         address: XelaDAOAddress,
         abi: XelaDAOABI,
         functionName: 'executeProposal',
