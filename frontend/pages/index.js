@@ -38,11 +38,23 @@ export default function Home() {
       const timer = setTimeout(() => {
         setCreateProposalError(false)
       }, 3000);
+      return () => clearTimeout(timer);
     }
-  }, [createProposalError])
+  }, [createProposalError]);
 
   // State variable to store all proposals in the DAO
   const [proposals, setProposals] = useState([]);
+  // State variable to know if the proposals are fetching
+  const [loadProposals, setLoadProposals] = useState(false);
+  // Wait 2.5 seconds before displaying the "no proposals" message
+  useEffect(() => {
+    if(loadProposals === true) {
+      const timer = setTimeout(() => {
+        setLoadProposals(false)
+      }, 2500);
+      return () => clearTimeout(timer);
+    }
+  }, [loadProposals]);
 
   // Fake NFT token ID to purchase. Used when creating a proposal.
   const [fakeNftTokenId, setFakeNftTokenId] = useState("");
@@ -351,7 +363,7 @@ export default function Home() {
           Loading... Waiting for transaction
         </div>
       );
-    } else if (proposals.length === 0) {
+    } else if ((proposals.length === 0) && !loadProposals) {
       return (
         <div className={styles.description}>
           No proposals have been created
@@ -387,7 +399,7 @@ export default function Home() {
                   {/* Else if proposal's deadline exceeded and proposal not executed */}
                   {/* EXECUTE PROPOSAL BUTTON */}
                   <button className={styles.proposalActionButton} onClick={() => executeProposal(p.proposalId)}>
-                    Execute Proposal{" "}{p.yayVotes > p.nayVotes ? "(YES)" : "(NO)"}
+                    Execute Proposal {p.yesVote > p.noVote ? ("(YES)") : ("(NO)")}
                   </button>
                 </div>
               ) : (
@@ -407,8 +419,8 @@ export default function Home() {
   // 'View Proposals' tab
   useEffect(() => {
     if (selectedTab === "View Proposals") {
+      setLoadProposals(true);
       fetchAllProposals();
-      console.log("Proposals fetched");
     }
   }, [selectedTab]);
   
