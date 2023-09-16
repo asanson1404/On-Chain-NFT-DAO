@@ -5,7 +5,7 @@
   align-items: center;
   text-align: center;
   padding: 8rem;
-  min-height: 100vh;
+  min-height: 95vh;
 }
 
 .main > div {
@@ -85,14 +85,13 @@
 }
 
 .flexMint > button:hover {
-  transform: scale(1.05); /* Augmente légèrement la taille au survol */
+  transform: scale(1.05);
 }
 
 .createProposalContainer {
   display: flex;
   align-items: center;
   justify-content: center;
-  max-width: 50rem;
   margin-bottom: 1rem;
 }
 
@@ -184,10 +183,37 @@
   background-color: #5c2a83;
 }
 
+.withdrawContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 4rem;
+}
+
+.withdrawContainer > button {
+  justify-content: center;
+  align-items: center;
+  background-color: #4e0a82;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  border-radius: var(--border-radius);
+  border: 1px solid #6c6076;
+  transition: border 900ms;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.withdrawContainer > button:hover {
+  transform: scale(1.05);
+}
+
+.imageContainer {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 3rem;
+}
+
 .image {
-  position: relative;
   width: 10rem;
-  z-index: 1;
 }
 
 .code {
@@ -201,8 +227,6 @@
   width: var(--max-width);
   max-width: 100%;
 }
-
-
 
 .center {
   display: flex;

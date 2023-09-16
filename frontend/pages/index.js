@@ -30,6 +30,9 @@ export default function Home() {
   // State variable to show loading state when waiting for a transaction to go through
   const [joining, setJoining] = useState(false);
 
+  // State variable to show loading state when waiting for a transaction to go through
+  const [withdraw, setWithdraw] = useState(false);
+
   // State variable to know if the fake token ID is invalid
   const [createProposalError, setCreateProposalError] = useState(false);
   // Use effect to display the error message only 3 seconds
@@ -308,6 +311,26 @@ export default function Home() {
     fetchAllProposals();
   }
 
+  // Function to withdraw ethers from the DAO contract
+  async function withdrawDAOEther() {
+
+    setWithdraw(true);
+
+    try {
+      const hash = await writeContract({
+        address: XelaDAOAddress,
+        abi: XelaDAOABI,
+        functionName: 'withdrawEthers',
+      });
+      await waitForTransaction(hash);
+    } catch(error) {
+      console.error(error);
+      window.alert(error);
+    }
+
+    setWithdraw(false);
+  }
+
   // JSX - Function to render the content of the appropriate tab (Create Proposal or View Proposal)
   // Based on the value of the selectedTab hook
   function renderTabs() {
@@ -498,22 +521,28 @@ export default function Home() {
             </button>
           </div>
           {renderTabs()}
+          
+          {/* Display additional withdraw button if connected wallet is owner */}
+          {address.toLowerCase() === daoOwner.data.toLowerCase() ? (
+            <div className={styles.withdrawContainer}>
+              {withdraw ? (
+                <div className={styles.description}>
+                  Withdrawing ethers...
+                </div>
+              ) : (
+                <button onClick={() => withdrawDAOEther()}>
+                  Withdraw DAO ETH
+                </button>
+              )}
+            </div>
+          ) : (
+            ""
+          )}
+        </div>
 
-        </div>
-        {daobalance.data && (
-              <>
-                DAO's Treasury Balance:{" "}
-                {formatEther(daobalance.data.value).toString()} ETH
-                RESERVED TOKENS = {reservedTokens.data}
-                RESERVED TOKENS CLAIMED = {reservedTokensClaimed.data}<br/>
-                whitelisted : {Boolean(whitelisted.data).toString()}
-                NB TOKEN MINTED : {Number(nbTokenMinted.data)}
-                
-              </>
-            )} <br/>
-        <div>
-          <img className={styles.image} src="https://i.imgur.com/buNhbF7.png" />
-        </div>
+      </div>
+      <div className={styles.imageContainer}>
+        <img className={styles.image} src="https://i.imgur.com/buNhbF7.png" />
       </div>
     </div>
   );
