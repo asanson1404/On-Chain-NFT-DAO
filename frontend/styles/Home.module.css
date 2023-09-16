@@ -27,6 +27,14 @@
   text-align: center;
 }
 
+.connectButton > h3 {
+  text-align: center;
+  font-style: italic;
+  font-size: 150%;
+  margin-bottom: 3rem;
+  color: #085f52; 
+}
+
 .connectButton > div {
   display: flex;
   justify-content: center;

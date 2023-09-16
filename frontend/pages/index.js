@@ -460,6 +460,7 @@ export default function Home() {
     <div className={inter.className}>
       <div className={styles.connectButton}>
         <h1>Connect your wallet to enter in the <span className={styles.xelaDaoColor}>Xela DAO</span></h1><br/>
+        <h3>This DAO runs on the Sepolia Network</h3>
         <div><ConnectButton /></div>
       </div>
     </div>
