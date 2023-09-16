@@ -305,6 +305,7 @@ export default function Home() {
     }
 
     setLoading(false);
+    fetchAllProposals();
   }
 
   // JSX - Function to render the content of the appropriate tab (Create Proposal or View Proposal)
@@ -332,7 +333,7 @@ export default function Home() {
         <div>
           <p>You don't own any Xela NFT. <br/>
           <b>You cannot create or vote on proposals</b></p>
-          <p>{Number(nbTokenMinted.data)} tokens still available for purchase</p>
+          <p>{maxTokenIds - Number(nbTokenMinted.data)} tokens still available for purchase</p>
         </div>
       );
     } else {
@@ -383,29 +384,29 @@ export default function Home() {
               <p>NO vote: {p.noVote}</p>
               <p>Executed?: {p.executed ? "Yes" : "No"}</p>
 
-              {/* If proposal's deadline not exceeded and proposal not executed */}
               {p.deadline > Date.now() && !p.executed ? (
                 <div className={styles.flex}>
-                  {/* VOTE YES BUTTON */}
                   <button className={styles.proposalActionButton} onClick={() => voteOnProposal(p.proposalId, "YES")}>
                     Vote YES
                   </button>
-                  {/* VOTE NO BUTTON */}
                   <button className={styles.proposalActionButton} onClick={() => voteOnProposal(p.proposalId, "NO")}>
                     Vote NO
                   </button>
                 </div>
               ) : p.deadline.getTime() < Date.now() && !p.executed ? (
                 <div className={styles.flex}>
-                  {/* Else if proposal's deadline exceeded and proposal not executed */}
-                  {/* EXECUTE PROPOSAL BUTTON */}
                   <button className={styles.proposalActionButton} onClick={() => executeProposal(p.proposalId)}>
                     Execute Proposal {p.yesVote > p.noVote ? ("(YES)") : ("(NO)")}
                   </button>
                 </div>
               ) : (
-                <div className={styles.description}>
+                <div className={styles.proposalExecuted}>
                   Proposal Executed
+                  {p.yesVote > p.noVote ? (
+                    <p>(Token ID {p.nftTokenIdToBuy} bought)</p>
+                  ) : (
+                    <p>(Token ID {p.nftTokenIdToBuy} not bought)</p>
+                  )}
                 </div>
               )}
             </div>
