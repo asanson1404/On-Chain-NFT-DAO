@@ -13,8 +13,8 @@
         This collection is bound to a DAO (same owner) which allows NFTs holder to propose the purchase of new NFTs 
 
 
-    Xela Collection Contract Address:
-    https://sepolia.etherscan.io/ : 
+    Xela Collection Contract Address: 0xB8492aD52067B0b0a520041c0B16A3092bee05Bc
+    https://sepolia.etherscan.io/ : https://sepolia.etherscan.io/address/0xB8492aD52067B0b0a520041c0B16A3092bee05Bc
 
 */
 

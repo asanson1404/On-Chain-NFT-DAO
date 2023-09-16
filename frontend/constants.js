@@ -1,8 +1,8 @@
 // The Smart Contracts Addresses
-export const WhitelistAddress           = "0x5FE3eD446e0195E9626744D1047E31C8927535d5";
-export const FakeNFTMarketplaceAddress  = "0x9E3e5D91A9521b14F842A747a62Af4774C4223b9";
-export const XelaCollectionNFTAddress   = "0x5504899Eb7a4A21485Fa20C48371776E9E6D4E43";
-export const XelaDAOAddress             = "0x4d67959Ffbaafd79DE45fF73147147185d626bf7";
+export const WhitelistAddress           = "0xb3b18C956f1D0D90a5E45D3249b9C31711aFb8a6";
+export const FakeNFTMarketplaceAddress  = "0x6b70ECA73689463C863873154744169Bcc622308";
+export const XelaCollectionNFTAddress   = "0xB8492aD52067B0b0a520041c0B16A3092bee05Bc";
+export const XelaDAOAddress             = "0x1ae6F573F0D7b4b966Ce103BC18F3A3b9E43987b";
 
 // The Smart Contracts ABI
 export const WhitelistABI = [

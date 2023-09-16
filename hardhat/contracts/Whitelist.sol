@@ -13,8 +13,8 @@
         We decided to have 4 whitelisted addresses 
 
 
-    Whitelist Contract Address: 
-    https://sepolia.etherscan.io/ : 
+    Whitelist Contract Address: 0xb3b18C956f1D0D90a5E45D3249b9C31711aFb8a6
+    https://sepolia.etherscan.io/ : https://sepolia.etherscan.io/address/0xb3b18C956f1D0D90a5E45D3249b9C31711aFb8a6
 
 */
 

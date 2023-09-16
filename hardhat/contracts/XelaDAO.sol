@@ -21,8 +21,8 @@
             happens automatically from the marketplace
 
 
-    Xela DAO Contract Address:
-    https://sepolia.etherscan.io/ : 
+    Xela DAO Contract Address: 0x1ae6F573F0D7b4b966Ce103BC18F3A3b9E43987b
+    https://sepolia.etherscan.io/ : https://sepolia.etherscan.io/address/0x1ae6F573F0D7b4b966Ce103BC18F3A3b9E43987b
 
 */
 

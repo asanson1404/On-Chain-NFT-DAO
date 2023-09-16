@@ -12,8 +12,8 @@
         It's possible to call classical function such as purchase, getPrice and available.
         The user can invent the token id ;)
 
-    Fake NFT Marketplace Contract Address: 
-    https://sepolia.etherscan.io/ : 
+    Fake NFT Marketplace Contract Address: 0x6b70ECA73689463C863873154744169Bcc622308
+    https://sepolia.etherscan.io/ : https://sepolia.etherscan.io/address/0x6b70ECA73689463C863873154744169Bcc622308
 
 */
 

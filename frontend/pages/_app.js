@@ -3,10 +3,10 @@ import '@/styles/globals.css';
 
 import { getDefaultWallets, lightTheme, RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import { configureChains, createConfig, WagmiConfig } from 'wagmi';
-import { goerli, sepolia } from 'wagmi/chains';
+import { sepolia } from 'wagmi/chains';
 import { publicProvider } from 'wagmi/providers/public';
 
-const { chains, publicClient } = configureChains([goerli, sepolia], [publicProvider()]);
+const { chains, publicClient } = configureChains([sepolia], [publicProvider()]);
 
 const { connectors } = getDefaultWallets({
   appName: "Xela DAO",
